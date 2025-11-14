@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented here.
 
+## [1.0.1] - 2025-11-15
+
+- Re-publish under the scoped package name `@phillbot/ts-kit`.
+
 ## [1.0.0] - 2025-11-15
 
 - Initial public release of `ts-kit`.

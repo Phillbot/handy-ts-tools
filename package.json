@@ -1,6 +1,6 @@
 {
   "name": "@phillbot/ts-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Collection of TypeScript-first helpers, type guards, and runtime asserts.",
   "license": "MIT",
   "type": "module",
