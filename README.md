@@ -21,7 +21,7 @@ import {
   toArray,
   toArrayAsync,
   toPercent,
-} from "ts-kit";
+} from "@phillbot/ts-kit";
 
 const payload = assertDefined(maybeValue, "payload must be loaded");
 const completedPercent = toPercent(payload.completed, payload.total);
@@ -40,7 +40,7 @@ console.log("ready", buffered, completedPercent);
 ### Type helper example
 
 ```ts
-import type { RequireAtLeastOne } from "ts-kit";
+import type { RequireAtLeastOne } from "@phillbot/ts-kit";
 
 type FetchOptions = RequireAtLeastOne<
   {
