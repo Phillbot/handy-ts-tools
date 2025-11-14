@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented here.
 
+## [1.0.3] - 2025-11-15
+
+- Rename npm package to `handy-ts-tools` to avoid scope requirement.
+
 ## [1.0.1] - 2025-11-15
 
 - Re-publish under the scoped package name `@phillbot/ts-kit`.

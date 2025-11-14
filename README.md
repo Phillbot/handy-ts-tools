@@ -1,4 +1,4 @@
-# ts-kit
+# handy-ts-tools
 
 Small TypeScript-first toolkit with no runtime dependencies. Everything is grouped
 by intent so it is easy to tree-shake only what you need:
@@ -21,7 +21,7 @@ import {
   toArray,
   toArrayAsync,
   toPercent,
-} from "@phillbot/ts-kit";
+} from "handy-ts-tools";
 
 const payload = assertDefined(maybeValue, "payload must be loaded");
 const completedPercent = toPercent(payload.completed, payload.total);
@@ -40,7 +40,7 @@ console.log("ready", buffered, completedPercent);
 ### Type helper example
 
 ```ts
-import type { RequireAtLeastOne } from "@phillbot/ts-kit";
+import type { RequireAtLeastOne } from "handy-ts-tools";
 
 type FetchOptions = RequireAtLeastOne<
   {

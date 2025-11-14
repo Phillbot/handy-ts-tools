@@ -1,6 +1,6 @@
 {
-  "name": "@phillbot/ts-kit",
-  "version": "1.0.2",
+  "name": "handy-ts-tools",
+  "version": "1.0.3",
   "description": "Collection of TypeScript-first helpers, type guards, and runtime asserts.",
   "license": "MIT",
   "type": "module",
