@@ -6,7 +6,7 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Phillbot/ts-kit"
+    "url": "https://github.com/Phillbot/handy-ts-tools"
   },
   "exports": {
     ".": {
@@ -142,7 +142,7 @@
     "utility"
   ],
   "bugs": {
-    "url": "https://github.com/Phillbot/ts-kit/issues"
+    "url": "https://github.com/Phillbot/handy-ts-tools/issues"
   },
-  "homepage": "https://github.com/Phillbot/ts-kit#readme"
+  "homepage": "https://github.com/Phillbot/handy-ts-tools#readme"
 }
