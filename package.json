@@ -1,6 +1,6 @@
 {
   "name": "handy-ts-tools",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Collection of TypeScript-first helpers, type guards, and runtime asserts.",
   "license": "MIT",
   "type": "module",
@@ -66,6 +66,52 @@
     "./helpers/enum": {
       "types": "./dist/helpers/enum.d.ts",
       "import": "./dist/helpers/enum.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/index.d.ts"
+      ],
+      "asserts": [
+        "dist/asserts/index.d.ts"
+      ],
+      "typeguards": [
+        "dist/typeguards/index.d.ts"
+      ],
+      "types": [
+        "dist/types/index.d.ts"
+      ],
+      "helpers": [
+        "dist/helpers/index.d.ts"
+      ],
+      "helpers/core": [
+        "dist/helpers/core.d.ts"
+      ],
+      "helpers/object": [
+        "dist/helpers/object.d.ts"
+      ],
+      "helpers/promise": [
+        "dist/helpers/promise.d.ts"
+      ],
+      "helpers/iterable": [
+        "dist/helpers/iterable.d.ts"
+      ],
+      "helpers/async-iterable": [
+        "dist/helpers/asyncIterable.d.ts"
+      ],
+      "helpers/string": [
+        "dist/helpers/string.d.ts"
+      ],
+      "helpers/number": [
+        "dist/helpers/number.d.ts"
+      ],
+      "helpers/error": [
+        "dist/helpers/error.d.ts"
+      ],
+      "helpers/enum": [
+        "dist/helpers/enum.d.ts"
+      ]
     }
   },
   "types": "./dist/index.d.ts",
