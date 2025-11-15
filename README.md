@@ -11,17 +11,10 @@ by intent so it is easy to tree-shake only what you need:
 ## Usage
 
 ```ts
-import {
-  assertDefined,
-  ensureSuffix,
-  isNonEmptyArray,
-  mapAsyncIterable,
-  pipe,
-  take,
-  toArray,
-  toArrayAsync,
-  toPercent,
-} from "handy-ts-tools";
+import { assertDefined, ensureSuffix, pipe, toPercent } from "handy-ts-tools";
+import { isNonEmptyArray, mapAsyncIterable } from "handy-ts-tools/typeguards";
+import { take, toArray } from "handy-ts-tools/helpers/iterable";
+import { toArrayAsync } from "handy-ts-tools/helpers/async-iterable";
 
 const payload = assertDefined(maybeValue, "payload must be loaded");
 const completedPercent = toPercent(payload.completed, payload.total);
@@ -40,7 +33,7 @@ console.log("ready", buffered, completedPercent);
 ### Type helper example
 
 ```ts
-import type { RequireAtLeastOne } from "handy-ts-tools";
+import type { RequireAtLeastOne } from "handy-ts-tools/types";
 
 type FetchOptions = RequireAtLeastOne<
   {
@@ -81,6 +74,16 @@ pnpm test          # run Vitest suite
 ```
 
 Build uses `tsc`; tests are handled by Vitest. `pnpm` is the default package manager for this repo, but `npm`/`yarn` work too.
+
+### Selective imports
+
+Every module is exposed via explicit subpaths to keep bundles small:
+
+```ts
+import { assert } from "handy-ts-tools/asserts";
+import { ensurePrefix } from "handy-ts-tools/helpers/string";
+import { isDiscriminatedUnionMember } from "handy-ts-tools/typeguards";
+```
 
 ## Changelog & License
 

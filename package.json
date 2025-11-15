@@ -14,7 +14,59 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./asserts": {
+      "types": "./dist/asserts/index.d.ts",
+      "import": "./dist/asserts/index.js"
+    },
+    "./typeguards": {
+      "types": "./dist/typeguards/index.d.ts",
+      "import": "./dist/typeguards/index.js"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/types/index.js"
+    },
+    "./helpers": {
+      "types": "./dist/helpers/index.d.ts",
+      "import": "./dist/helpers/index.js"
+    },
+    "./helpers/core": {
+      "types": "./dist/helpers/core.d.ts",
+      "import": "./dist/helpers/core.js"
+    },
+    "./helpers/object": {
+      "types": "./dist/helpers/object.d.ts",
+      "import": "./dist/helpers/object.js"
+    },
+    "./helpers/promise": {
+      "types": "./dist/helpers/promise.d.ts",
+      "import": "./dist/helpers/promise.js"
+    },
+    "./helpers/iterable": {
+      "types": "./dist/helpers/iterable.d.ts",
+      "import": "./dist/helpers/iterable.js"
+    },
+    "./helpers/async-iterable": {
+      "types": "./dist/helpers/asyncIterable.d.ts",
+      "import": "./dist/helpers/asyncIterable.js"
+    },
+    "./helpers/string": {
+      "types": "./dist/helpers/string.d.ts",
+      "import": "./dist/helpers/string.js"
+    },
+    "./helpers/number": {
+      "types": "./dist/helpers/number.d.ts",
+      "import": "./dist/helpers/number.js"
+    },
+    "./helpers/error": {
+      "types": "./dist/helpers/error.d.ts",
+      "import": "./dist/helpers/error.js"
+    },
+    "./helpers/enum": {
+      "types": "./dist/helpers/enum.d.ts",
+      "import": "./dist/helpers/enum.js"
+    }
   },
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
