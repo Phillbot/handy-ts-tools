@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { AssertionError, assert, assertDefined, assertNever } from "../src/asserts/index.js";
+import { AssertionError, assert, assertDefined, assertNever } from "../src/asserts.js";
 
 describe("assert helpers", () => {
   it("asserts truthy values", () => {

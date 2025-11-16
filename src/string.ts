@@ -48,3 +48,49 @@ export function truncate(value: string, maxLength: number, ellipsis = "..."): st
 
   return `${value.slice(0, maxLength - ellipsis.length)}${ellipsis}`;
 }
+
+/**
+ * Splits a string into words accounting for casing and separators.
+ */
+function splitWords(value: string): string[] {
+  return value
+    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+    .replace(/[_\-\s]+/g, " ")
+    .trim()
+    .split(" ")
+    .filter(Boolean);
+}
+
+/**
+ * Converts text to camelCase (`handy_ts-tools` -> `handyTsTools`).
+ */
+export function camelCase(value: string): string {
+  const words = splitWords(value.toLowerCase());
+  if (words.length === 0) {
+    return "";
+  }
+  return words[0] + words.slice(1).map((word) => capitalize(word)).join("");
+}
+
+/**
+ * Converts text to kebab-case.
+ */
+export function kebabCase(value: string): string {
+  return splitWords(value).map((word) => word.toLowerCase()).join("-");
+}
+
+/**
+ * Converts text to snake_case.
+ */
+export function snakeCase(value: string): string {
+  return splitWords(value).map((word) => word.toLowerCase()).join("_");
+}
+
+/**
+ * Converts text to Title Case.
+ */
+export function titleCase(value: string): string {
+  return splitWords(value)
+    .map((word) => capitalize(word.toLowerCase()))
+    .join(" ");
+}

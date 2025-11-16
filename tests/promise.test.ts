@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createDeferred } from "../src/helpers/promise.js";
+import { createDeferred } from "../src/promise.js";
 
 describe("promise helpers", () => {
   it("resolves deferred promise when resolve is called", async () => {

@@ -5,7 +5,7 @@ import {
   reduceAsyncIterable,
   takeAsync,
   toArrayAsync,
-} from "../src/helpers/asyncIterable.js";
+} from "../src/async-iterable.js";
 
 async function* asyncFromArray<T>(values: readonly T[]) {
   for (const value of values) {

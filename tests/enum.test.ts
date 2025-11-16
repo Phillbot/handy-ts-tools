@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseEnumValue } from "../src/helpers/enum.js";
+import { parseEnumValue } from "../src/enum.js";
 
 enum Status {
   Idle = "IDLE",

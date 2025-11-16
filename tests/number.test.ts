@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { inRange, roundTo, toPercent } from "../src/helpers/number.js";
+import { inRange, roundTo, toPercent } from "../src/number.js";
 
 describe("number helpers", () => {
   it("rounds to provided precision", () => {

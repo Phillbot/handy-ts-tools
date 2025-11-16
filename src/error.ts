@@ -18,8 +18,11 @@ export function isErrorLike(value: unknown): value is Error {
 /**
  * Wraps a synchronous or async function and makes sure thrown errors contain the provided message.
  */
-export function wrapError<T extends (...args: any[]) => any>(fn: T, message: string): T {
-  const wrapped = (async (...args: Parameters<T>): Promise<ReturnType<T>> => {
+export function wrapError<Args extends unknown[], R>(
+  fn: (...args: Args) => R | Promise<R>,
+  message: string,
+): (...args: Args) => Promise<R> {
+  return async (...args: Args): Promise<R> => {
     try {
       return await fn(...args);
     } catch (error) {
@@ -29,9 +32,7 @@ export function wrapError<T extends (...args: any[]) => any>(fn: T, message: str
       }
       throw new Error(`${message}: ${String(error)}`);
     }
-  }) as T;
-
-  return wrapped;
+  };
 }
 
 export interface RetryOptions {

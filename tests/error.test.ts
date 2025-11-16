@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isErrorLike, retry, wrapError } from "../src/helpers/error.js";
+import { isErrorLike, retry, wrapError } from "../src/error.js";
 
 describe("error helpers", () => {
   it("detects error-like objects", () => {
