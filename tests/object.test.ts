@@ -21,6 +21,7 @@ describe("object helpers", () => {
     const source = { a: 1, b: 2, c: 3 };
     expect(omit(source, ["b"])).toEqual({ a: 1, c: 3 });
     expect(merge({ a: 1 }, { b: 2 }, { a: 3 })).toEqual({ a: 3, b: 2 });
+    expect(merge({ a: 1 }, {})).toEqual({ a: 1 });
   });
 
   it("gets and sets deep paths", () => {
@@ -29,5 +30,8 @@ describe("object helpers", () => {
     expect(deepGet(obj, ["missing", "path"])).toBeUndefined();
     deepSet(obj, ["user", "profile", "age"], 30);
     expect(obj.user.profile.age).toBe(30);
+    expect(() => deepSet(obj, [], "x")).toThrow();
+    const numKeyObj: any = { 1: { value: 2 } };
+    expect(deepGet(numKeyObj, [1, "value"])).toBe(2);
   });
 });

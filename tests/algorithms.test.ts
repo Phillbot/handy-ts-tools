@@ -79,11 +79,16 @@ describe("algorithms helpers", () => {
     pq.push(1);
     pq.push(3);
     expect([pq.pop(), pq.pop(), pq.pop()]).toEqual([1, 3, 5]);
+    expect(pq.pop()).toBeUndefined();
+    expect(pq.peek()).toBeUndefined();
+    expect(pq.size).toBe(0);
 
     const uf = new UnionFind<number>();
     uf.union(1, 2);
     expect(uf.find(1)).toBe(uf.find(2));
     expect(uf.find(3)).not.toBe(uf.find(1));
+    uf.union(2, 3);
+    expect(uf.find(1)).toBe(uf.find(3));
 
     const weighted = new Map<string, Array<[string, number]>>([
       ["a", [["b", 1]]],
@@ -91,6 +96,12 @@ describe("algorithms helpers", () => {
       ["c", []],
     ]);
     expect(dijkstra(weighted, "a").get("c")).toBe(3);
+    const cyclic = new Map<string, Array<[string, number]>>([
+      ["a", [["a", 0]]],
+      ["b", []],
+    ]);
+    expect(dijkstra(cyclic, "a").get("a")).toBe(0);
+    expect(dijkstra(cyclic, "b").get("a")).toBeUndefined();
 
     expect(combinations([1, 2, 3], 2)).toEqual([
       [1, 2],
@@ -98,5 +109,13 @@ describe("algorithms helpers", () => {
       [2, 3],
     ]);
     expect(permutations([1, 2, 3]).length).toBe(6);
+    expect(combinations([1, 2], 0)).toEqual([[]]);
+    expect(combinations([1, 2], 5)).toEqual([]);
+    expect(permutations([])).toEqual([[]]);
+    expect(mergeSort([], (a, b) => a - b)).toEqual([]);
+    expect(bubbleSort([1], (a, b) => a - b)).toEqual([1]);
+
+    expect(bfs(new Map<string, string[]>(), "missing")).toEqual(["missing"]);
+    expect(dfs(new Map<string, string[]>(), "missing")).toEqual(["missing"]);
   });
 });

@@ -28,7 +28,7 @@ export type DeepReadonly<T> = T extends (...args: unknown[]) => unknown
 /**
  * Ensures two types match exactly (no extra keys permitted).
  */
-export type Exact<T, Shape extends T> = T & Record<Exclude<keyof T, keyof Shape>, never>;
+export type Exact<T, Shape> = T extends Shape ? (Shape extends T ? T : never) : never;
 
 /**
  * Converts a union into an intersection.

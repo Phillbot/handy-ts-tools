@@ -18,6 +18,8 @@ describe("string helpers", () => {
     expect(truncate("typescript", 4)).toBe("t...");
     expect(truncate("ts", 10)).toBe("ts");
     expect(truncate("typescript", 0)).toBe("");
+    expect(truncate("typescript", 2)).toBe("..");
+    expect(truncate("typescript", 3, "--")).toBe("t--");
   });
 
   it("converts to camel/kebab/snake/title cases", () => {
@@ -25,5 +27,7 @@ describe("string helpers", () => {
     expect(kebabCase("handyTsTools")).toBe("handy-ts-tools");
     expect(snakeCase("handy ts tools")).toBe("handy_ts_tools");
     expect(titleCase("handy-ts_tools")).toBe("Handy Ts Tools");
+    expect(camelCase("  spaced  words ")).toBe("spacedWords");
+    expect(kebabCase("Mixed_snake case")).toBe("mixed-snake-case");
   });
 });

@@ -107,5 +107,11 @@ describe("typeguards", () => {
     }
 
     expect(isDiscriminatedUnionMember(square, "kind", "circle")).toBe(false);
+    expect(isDiscriminatedUnionMember(null as any, "kind", "circle")).toBe(false);
+    expect(isDiscriminatedUnionMember(() => {}, "kind" as any, "circle")).toBe(false);
+  });
+
+  it("rejects functions as objects", () => {
+    expect(isObject(() => {})).toBe(false);
   });
 });

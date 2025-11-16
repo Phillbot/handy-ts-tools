@@ -14,6 +14,11 @@ describe("error helpers", () => {
     }, "wrapped");
 
     await expect(failing()).rejects.toThrow("wrapped: fail");
+
+    const nonError = wrapError(async () => {
+      throw "fail";
+    }, "wrapped");
+    await expect(nonError()).rejects.toThrow("wrapped: fail");
   });
 
   it("retries asynchronous operations", async () => {
@@ -27,5 +32,17 @@ describe("error helpers", () => {
     });
     expect(result).toBe("done");
     expect(attempts).toBe(3);
+
+    let shortAttempts = 0;
+    await expect(
+      retry(
+        async () => {
+          shortAttempts += 1;
+          throw new Error("nope");
+        },
+        { retries: 1, delayMs: 0, shouldRetry: () => false },
+      ),
+    ).rejects.toThrow();
+    expect(shortAttempts).toBe(1);
   });
 });

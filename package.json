@@ -20,9 +20,12 @@
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist",
     "test": "vitest run",
-    "reborn": "pnpm run clean && pnpm run build && pnpm run test"
+    "test:types": "pnpm run build && tsd",
+    "test:all": "pnpm run test && pnpm run test:types",
+    "reborn": "pnpm run clean && pnpm run build && pnpm run test:all"
   },
   "devDependencies": {
+    "tsd": "^0.30.0",
     "typescript": "^5.6.3",
     "vitest": "^4.0.9"
   },
