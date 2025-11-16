@@ -109,3 +109,7 @@ const doubled = await AsyncIterableUtils.toArrayAsync(
 ## Full usage guide
 
 Looking for concrete examples for every helper, guard, and type? See [DOCS.md](./DOCS.md) for a full walkthrough.
+
+## AI notice
+
+Changes in this repository include AI-assisted code, tests, and documentation. See [AI_NOTICE.md](./AI_NOTICE.md).
