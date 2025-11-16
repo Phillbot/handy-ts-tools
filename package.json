@@ -11,7 +11,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "DOCS.md"
+    "DOCS.md",
+    "AI_NOTICE.md"
   ],
   "publishConfig": {
     "access": "public"
