@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented here.
 
+## [1.3.1] - 2025-11-16
+
+- Document existing namespace exports (`Algorithms`, `IterableUtils`, `Asserts`, etc.) and root-only imports in README/DOCS; add full usage guide.
+- Expand runtime test coverage (iterable/async iterable/object/string/number/error/algorithms) and add type-level tests with `tsd` plus combined `test:all` script.
+- Fix `Exact` type to enforce symmetric matching.
+
 ## [1.3.0] - 2025-11-16
 
 - Switch package to a single root entrypoint (`handy-ts-tools`) and drop subpath exports.

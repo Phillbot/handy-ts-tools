@@ -1,12 +1,6 @@
 # handy-ts-tools
 
-Small TypeScript-first toolkit with no runtime dependencies. Everything is grouped
-by intent so it is easy to tree-shake only what you need:
-
-- **typeguards** — runtime guards for narrowing values (`isObject` and `isPlainObject` both exclude arrays; use `isArray` helpers instead);
-- **asserts** — lightweight assertions and custom error types;
-- **helpers** — utility functions split by domain (`functional`, `iterable`, `asyncIterable`, `object`, `string`, `number`, `promise`, `error`, `enum`, `algorithms`);
-- **types** — pure TypeScript helpers like `ValueOf`, `RequireAtLeastOne`, and `DeepReadonly`.
+Small TypeScript-first toolkit with no runtime dependencies. All helpers, guards, and types are exported from the single entrypoint `handy-ts-tools`. Categories are for orientation only (functional, iterable/async-iterable, object, string, number, promise, error, enum, algorithms, typeguards, asserts, and type utilities like `ValueOf`, `RequireAtLeastOne`, `DeepReadonly`).
 
 ## Usage
 
@@ -40,7 +34,7 @@ console.log("ready", buffered, completedPercent);
 ### Type helper example
 
 ```ts
-import type { RequireAtLeastOne } from "handy-ts-tools/types";
+import type { RequireAtLeastOne } from "handy-ts-tools";
 
 type FetchOptions = RequireAtLeastOne<
   {
@@ -55,23 +49,13 @@ type FetchOptions = RequireAtLeastOne<
 const request: FetchOptions = { email: "user@example.com" };
 ```
 
-## Available helpers
+## What's inside
 
-| Category | Functions |
-| --- | --- |
-| `typeguards` | `isDefined`, `isString`, `isNumber`, `isPlainObject`, `isObject`, `isEmptyObject`, `isArray`, `isEmptyArray`, `isNonEmptyArray`, `isSet`, `isEmptySet`, `isMap`, `isEmptyMap`, `isOneOf`, `isTrue`, `isFalse`, `isNothing`, `isSomething`, `isNull`, `isUndefined`, `isDiscriminatedUnionMember` |
-| `asserts` | `AssertionError`, `assert`, `assertDefined`, `assertNever` |
-| `functional` | `identity`, `noop`, `pipe`, `compose`, `clamp`, `once`, `memoize` |
-| `object` | `pick`, `ensureSet`, `ensureMap`, `omit`, `merge`, `deepGet`, `deepSet` |
-| `promise` | `createDeferred` |
-| `iterable` | `toArray`, `mapIterable`, `filterIterable`, `take`, `drop`, `flatMapIterable`, `reduceIterable`, `toSet`, `toMap`, `chunk`, `groupBy`, `partition`, `zip` |
-| `async iterable` | `toArrayAsync`, `mapAsyncIterable`, `filterAsyncIterable`, `takeAsync`, `reduceAsyncIterable` |
-| `string` | `ensurePrefix`, `ensureSuffix`, `capitalize`, `truncate`, `camelCase`, `kebabCase`, `snakeCase`, `titleCase` |
-| `number` | `roundTo`, `inRange`, `toPercent` |
-| `error` | `isErrorLike`, `wrapError`, `retry` |
-| `enum` | `parseEnumValue` |
-| `types` | `ValueOf`, `RequireAtLeastOne`, `DeepReadonly`, `Exact`, `UnionToIntersection`, `Nullish`, `Maybe<T>`, `Falsy`, `Truthy<T>`, `NonEmptyArray<T>`, `Mutable<T>`, `DeepRequired<T>` |
-| `helpers/algorithms` | `binarySearch`, `uniqueBy`, `topologicalSort`, `bfs`, `dfs`, `quickSelect`, `mergeSort`, `kSmallest`, `bubbleSort`, `summarize`, `traverseTree`, `PriorityQueue`, `UnionFind`, `dijkstra`, `combinations`, `permutations` |
+All exports come from the root entrypoint. The library includes:
+- Runtime guards (`isDefined`, `isPlainObject`, `isDiscriminatedUnionMember`, etc.) and lightweight asserts.
+- Functional/iterable helpers (sync and async), string/number/object/promise/error/enum utilities.
+- Algorithms (search/sort/graph, priority queue, union-find, combinations/permutations).
+- Type-level helpers (`ValueOf`, `RequireAtLeastOne`, `DeepReadonly`, `Exact`, `UnionToIntersection`, `DeepRequired`, etc.).
 
 ## Development
 
@@ -79,16 +63,42 @@ const request: FetchOptions = { email: "user@example.com" };
 pnpm install       # install dependencies
 pnpm run build     # emit dist/ artifacts
 pnpm test          # run Vitest suite
+pnpm run test:types # run type checks with tsd (after build)
+pnpm run test:all   # run both Vitest and tsd
 ```
 
-Build uses `tsc`; tests are handled by Vitest. `pnpm` is the default package manager for this repo, but `npm`/`yarn` work too.
+Build uses `tsc`; tests are handled by Vitest and tsd. `pnpm` is the default package manager for this repo, but `npm`/`yarn` work too.
 
 ### Imports
 
-Single entrypoint (all helpers, guards, and types):
+Single entrypoint (all helpers, guards, algorithms, and types):
 
 ```ts
-import { assert, assertNever, ensurePrefix, isDiscriminatedUnionMember } from "handy-ts-tools";
+import {
+  assert,
+  assertNever,
+  ensurePrefix,
+  isDiscriminatedUnionMember,
+  pipe,
+  toArray,
+  mapAsyncIterable,
+  binarySearch,
+  ValueOf,
+} from "handy-ts-tools";
+```
+
+Namespaced imports are also exposed for grouping by domain:
+
+```ts
+import { Asserts, TypeGuards, Algorithms, IterableUtils, AsyncIterableUtils } from "handy-ts-tools";
+
+Asserts.assert(true);
+TypeGuards.isPlainObject(value);
+const found = Algorithms.binarySearch([1, 3, 5], 3, (a, b) => a - b);
+const firstTwo = IterableUtils.toArray(IterableUtils.take([1, 2, 3], 2));
+const doubled = await AsyncIterableUtils.toArrayAsync(
+  AsyncIterableUtils.mapAsyncIterable([1, 2], (v) => v * 2),
+);
 ```
 
 ## Changelog & License

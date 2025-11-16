@@ -1,6 +1,6 @@
 # handy-ts-tools: usage guide
 
-This guide walks through the library with small, runnable snippets. Everything is available from the single entrypoint `handy-ts-tools`; tree-shaking drops unused imports in bundlers.
+This guide walks through the library with small, runnable snippets. Everything is available from the single entrypoint `handy-ts-tools`; tree-shaking drops unused imports in bundlers. Namespaced imports (e.g., `Algorithms`, `IterableUtils`) are also available from the root.
 
 ## Assertions
 
@@ -363,4 +363,42 @@ type MaybeUser = Maybe<User>; // User | null | undefined
 type NonEmpty = NonEmptyArray<number>; // [number, ...number[]]
 type FalsyValue = Falsy; // inferred union of falsy values
 type TruthyValue<T> = Truthy<T>; // removes falsy cases from T
+```
+
+## Namespaced imports
+
+Everything is exported from the root, but if you prefer grouping by domain you can use namespace imports:
+
+```ts
+import {
+  Asserts,
+  TypeGuards,
+  Functional,
+  IterableUtils,
+  AsyncIterableUtils,
+  ObjectUtils,
+  StringUtils,
+  NumberUtils,
+  PromiseUtils,
+  ErrorUtils,
+  EnumUtils,
+  Algorithms,
+  Types,
+} from "handy-ts-tools";
+
+Asserts.assert(true);
+TypeGuards.isPlainObject({});
+Functional.pipe(1, (x) => x + 1);
+const taken = IterableUtils.toArray(IterableUtils.take([1, 2, 3], 2));
+const doubled = await AsyncIterableUtils.toArrayAsync(
+  AsyncIterableUtils.mapAsyncIterable([1, 2], (v) => v * 2),
+);
+const merged = ObjectUtils.merge({ a: 1 }, { b: 2 });
+const cased = StringUtils.camelCase("hello-world");
+const rounded = NumberUtils.roundTo(3.14159, 2);
+const deferred = PromiseUtils.createDeferred<number>();
+const wrapped = ErrorUtils.wrapError(() => { throw new Error("x"); }, "msg");
+const parsed = EnumUtils.parseEnumValue({ A: "a" }, "a");
+const sorted = Algorithms.mergeSort([3, 1, 2], (a, b) => a - b);
+type ExactUser = Types.Exact<{ id: string }, { id: string }>;
 ```
