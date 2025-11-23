@@ -50,10 +50,29 @@ export type Truthy<T> = T extends Falsy ? never : T;
 /** Tuple with at least one element. */
 export type NonEmptyArray<T> = readonly [T, ...T[]];
 
+/** Readonly Record alias for constrained keys/values. */
+export type ReadonlyRecord<K extends PropertyKey, V> = Readonly<Record<K, V>>;
+
+/** Non-empty Set shape (size > 0 at runtime). */
+export type NonEmptySet<T> = ReadonlySet<T> & { readonly size: number };
+
+/** Non-empty Map shape (size > 0 at runtime). */
+export type NonEmptyMap<K, V> = ReadonlyMap<K, V> & { readonly size: number };
+
 /** Strips readonly modifiers. */
 export type Mutable<T> = {
   -readonly [K in keyof T]: T[K];
 };
+
+/** Alias for removing readonly (inverse of Readonly). */
+export type Writable<T> = Mutable<T>;
+
+/** Recursively makes every property optional. */
+export type DeepPartial<T> = T extends (...args: unknown[]) => unknown
+  ? T
+  : T extends object
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
+  : T;
 
 /** Recursively marks every field as required. */
 export type DeepRequired<T> = T extends (...args: unknown[]) => unknown
@@ -61,3 +80,6 @@ export type DeepRequired<T> = T extends (...args: unknown[]) => unknown
   : T extends object
   ? { [K in keyof T]-?: DeepRequired<T[K]> }
   : T;
+
+/** Opaque/brand type to prevent mixing structurally-identical values. */
+export type Opaque<Type, Token extends string | symbol> = Type & { readonly __brand: Token };

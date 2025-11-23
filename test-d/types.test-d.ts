@@ -12,6 +12,12 @@ import type {
   UnionToIntersection,
   Mutable,
   ValueOf,
+  ReadonlyRecord,
+  NonEmptySet,
+  NonEmptyMap,
+  Writable,
+  DeepPartial,
+  Opaque,
 } from "../dist/types.js";
 import { assertNever } from "../dist/asserts.js";
 import { isDiscriminatedUnionMember } from "../dist/typeguards.js";
@@ -58,6 +64,32 @@ expectError(() => {
   const shouldFail: NonEmptyArray<number> = [];
   void shouldFail;
 });
+
+// ReadonlyRecord locks keys and values
+const readonlyRecord: ReadonlyRecord<"a" | "b", number> = { a: 1, b: 2 };
+expectType<number>(readonlyRecord.a);
+expectError(() => {
+  readonlyRecord.a = 3;
+});
+
+// NonEmptySet / NonEmptyMap shapes
+const nes: NonEmptySet<number> = new Set([1]);
+expectType<number>(nes.size);
+const nem: NonEmptyMap<string, number> = new Map([["a", 1]]);
+expectType<number>(nem.size);
+
+// Writable alias
+type ReadonlyUser = Readonly<{ id: string; name?: string }>;
+expectAssignable<Writable<ReadonlyUser>>({ id: "1", name: "x" });
+
+// DeepPartial
+type NestedPartial = DeepPartial<{ a: { b: number; c: string[] } }>;
+expectAssignable<NestedPartial>({ a: { c: [] } });
+
+// Opaque / brand
+type UserId = Opaque<string, "UserId">;
+const branded: UserId = "123" as UserId;
+expectAssignable<UserId>(branded);
 
 // Nullish / Maybe / Truthy / Falsy
 const maybeStr: Maybe<string> = undefined as Nullish;

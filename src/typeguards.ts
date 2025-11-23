@@ -1,4 +1,4 @@
-import type { Falsy, Truthy } from "./types.js";
+import type { Falsy, Truthy, Opaque } from "./types.js";
 
 /**
  * Type guards for narrowing values at runtime.
@@ -19,10 +19,116 @@ export function isString(value: unknown, allowEmpty = true): value is string {
 }
 
 /**
+ * Guard for non-empty strings (shortcut for isString with allowEmpty=false).
+ */
+export function isNonEmptyString(value: unknown): value is string {
+  return isString(value, false);
+}
+
+const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+const isoDateTimeRegex = /^\d{4}-\d{2}-\d{2}T(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d{1,3})?)?(?:Z|[+-][01]\d:[0-5]\d)$/;
+
+/**
+ * Guard that accepts UUID v1–v5 strings (canonical 8-4-4-4-12 hex).
+ */
+export function isUUID(value: unknown): value is string {
+  return typeof value === "string" && uuidRegex.test(value);
+}
+
+/**
+ * Guard for ISO date strings (YYYY-MM-DD) that parse to a valid calendar date.
+ */
+export function isISODate(value: unknown): value is string {
+  if (typeof value !== "string" || !isoDateRegex.test(value)) {
+    return false;
+  }
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime()) && parsed.toISOString().startsWith(value);
+}
+
+/**
+ * Guard for ISO date-time strings with timezone (YYYY-MM-DDTHH:mm[:ss[.sss]]Z|±HH:mm).
+ */
+export function isISODateTime(value: unknown): value is string {
+  if (typeof value !== "string" || !isoDateTimeRegex.test(value)) {
+    return false;
+  }
+  const parsed = new Date(value);
+  return !Number.isNaN(parsed.getTime()) && isISODate(value.slice(0, 10));
+}
+
+/**
  * Guard that accepts only finite numbers.
  */
 export function isNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
+}
+
+/**
+ * Guard that accepts only finite integers.
+ */
+export function isInteger(value: unknown): value is number {
+  return Number.isInteger(value);
+}
+
+/**
+ * Guard that accepts only finite numbers (alias of isNumber for clarity).
+ */
+export function isFiniteNumber(value: unknown): value is number {
+  return isNumber(value);
+}
+
+/**
+ * Checks whether a number is greater than zero.
+ */
+export function isGreaterThanZero(value: unknown): value is number {
+  return isNumber(value) && value > 0;
+}
+
+/**
+ * Alias for positive numbers (> 0).
+ */
+export function isPositive(value: unknown): value is number {
+  return isGreaterThanZero(value);
+}
+
+/**
+ * Checks whether a number is strictly negative.
+ */
+export function isNegative(value: unknown): value is number {
+  return isNumber(value) && value < 0;
+}
+
+/**
+ * Checks whether a number is within a range (inclusive by default).
+ */
+export function isBetween(value: unknown, min: number, max: number, inclusive = true): value is number {
+  return isNumber(value) && (inclusive ? value >= min && value <= max : value > min && value < max);
+}
+
+/**
+ * Checks whether a number is even (finite integer).
+ */
+export function isEven(value: unknown): value is number {
+  return isNumber(value) && Number.isInteger(value) && value % 2 === 0;
+}
+
+/**
+ * Checks whether a number is odd (finite integer).
+ */
+export function isOdd(value: unknown): value is number {
+  return isNumber(value) && Number.isInteger(value) && Math.abs(value % 2) === 1;
+}
+
+/**
+ * Checks whether a number is a multiple of the provided divisor.
+ */
+export function isMultipleOf(value: unknown, divisor: number): value is number {
+  if (divisor === 0 || !Number.isFinite(divisor)) {
+    throw new RangeError("isMultipleOf: divisor must be a non-zero finite number");
+  }
+  return isNumber(value) && value % divisor === 0;
 }
 
 /**
@@ -76,6 +182,13 @@ export function isSet<T = unknown>(value: unknown): value is Set<T> {
 }
 
 /**
+ * Checks whether value is a Set with at least one entry.
+ */
+export function isNonEmptySet<T = unknown>(value: unknown): value is Set<T> {
+  return value instanceof Set && value.size > 0;
+}
+
+/**
  * Checks whether value is a Set with no entries.
  */
 export function isEmptySet(value: unknown): value is Set<never> {
@@ -90,6 +203,13 @@ export function isMap<K = unknown, V = unknown>(value: unknown): value is Map<K,
 }
 
 /**
+ * Checks whether value is a Map with at least one entry.
+ */
+export function isNonEmptyMap<K = unknown, V = unknown>(value: unknown): value is Map<K, V> {
+  return value instanceof Map && value.size > 0;
+}
+
+/**
  * Checks whether value is a Map with zero entries.
  */
 export function isEmptyMap(value: unknown): value is Map<never, never> {
@@ -101,6 +221,38 @@ export function isEmptyMap(value: unknown): value is Map<never, never> {
  */
 export function isOneOf<T extends readonly unknown[]>(value: unknown, allowed: T): value is T[number] {
   return allowed.includes(value);
+}
+
+/**
+ * Narrow objects that contain a given key.
+ */
+export function hasKey<T extends object, K extends PropertyKey>(value: T, key: K): value is T & Record<K, unknown> {
+  return value != null && typeof value === "object" && key in value;
+}
+
+/**
+ * Performs shallow equality on primitives, arrays, and plain objects.
+ */
+export function isShallowEqual(a: unknown, b: unknown): boolean {
+  if (Object.is(a, b)) {
+    return true;
+  }
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i += 1) {
+      if (!Object.is(a[i], b[i])) return false;
+    }
+    return true;
+  }
+  if (isPlainObject(a) && isPlainObject(b)) {
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+    if (aKeys.length !== bKeys.length) {
+      return false;
+    }
+    return aKeys.every((k) => Object.prototype.hasOwnProperty.call(b, k) && Object.is((a as Record<string, unknown>)[k], (b as Record<string, unknown>)[k]));
+  }
+  return false;
 }
 
 /**
@@ -158,9 +310,40 @@ export function isDiscriminatedUnionMember<
   TUnion extends Record<TKey, PropertyKey>,
   TKey extends keyof TUnion,
   TValue extends Extract<TUnion[TKey], PropertyKey>,
->(value: TUnion | Record<PropertyKey, unknown> | null | undefined, key: TKey, discriminator: TValue): value is Extract<TUnion, Record<TKey, TValue>> {
+>(value: TUnion | Record<PropertyKey, unknown> | null | undefined, key: TKey, discriminator: TValue): value is Extract<TUnion, Record<TKey, TValue>>;
+export function isDiscriminatedUnionMember(value: unknown, key: PropertyKey, discriminator: PropertyKey): boolean;
+export function isDiscriminatedUnionMember(value: unknown, key: PropertyKey, discriminator: PropertyKey): boolean {
   if (typeof value !== "object" || value === null) {
     return false;
   }
   return (value as Record<PropertyKey, unknown>)[key] === discriminator;
+}
+
+/**
+ * Creates a lightweight branding helper that marks values and provides a guard for the brand.
+ */
+export function createBrand<Token extends string | symbol>() {
+  const marker = Symbol("brand");
+
+  function brand<Value>(value: Value): Opaque<Value, Token> {
+    if (value === null || value === undefined) {
+      throw new TypeError("createBrand: cannot brand null or undefined");
+    }
+    if (typeof value === "object" || typeof value === "function") {
+      const obj = value as Record<PropertyKey, unknown>;
+      if (!Object.prototype.hasOwnProperty.call(obj, marker)) {
+        Object.defineProperty(obj, marker, { value: true, enumerable: false });
+      }
+      return value as Opaque<Value, Token>;
+    }
+    const boxed = Object(value) as Record<PropertyKey, unknown>;
+    Object.defineProperty(boxed, marker, { value: true, enumerable: false });
+    return boxed as unknown as Opaque<Value, Token>;
+  }
+
+  function isBrand<Value>(value: unknown): value is Opaque<Value, Token> {
+    return typeof value === "object" && value !== null && Boolean((value as Record<PropertyKey, unknown>)[marker]);
+  }
+
+  return { brand, isBrand };
 }

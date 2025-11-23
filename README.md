@@ -55,7 +55,7 @@ All exports come from the root entrypoint. The library includes:
 - Runtime guards (`isDefined`, `isPlainObject`, `isDiscriminatedUnionMember`, etc.) and lightweight asserts.
 - Functional/iterable helpers (sync and async), string/number/object/promise/error/enum utilities.
 - Algorithms (search/sort/graph, priority queue, union-find, combinations/permutations).
-- Type-level helpers (`ValueOf`, `RequireAtLeastOne`, `DeepReadonly`, `Exact`, `UnionToIntersection`, `DeepRequired`, etc.).
+- Type-level helpers (`ValueOf`, `RequireAtLeastOne`, `DeepReadonly`, `Exact`, `UnionToIntersection`, `DeepRequired`, `ReadonlyRecord`, `DeepPartial`, `Opaque`, etc.).
 
 ## Development
 

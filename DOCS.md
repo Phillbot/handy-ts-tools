@@ -31,11 +31,23 @@ Runtime guards that narrow unknown data before you use it.
 import {
   isString,
   isNumber,
+  isInteger,
+  isPositive,
+  isBetween,
+  isNonEmptyString,
+  isUUID,
+  isISODate,
+  isISODateTime,
+  isEven,
+  isOdd,
+  isGreaterThanZero,
   isPlainObject,
   isNonEmptyArray,
   isArray,
   isSet,
   isMap,
+  isNonEmptySet,
+  isNonEmptyMap,
   isOneOf,
   isTrue,
   isFalse,
@@ -51,12 +63,34 @@ if (isPlainObject(payload)) {
   // payload is Record<string, unknown>
 }
 
+const count: unknown = 3;
+if (isEven(count) && isGreaterThanZero(count)) {
+  // count is a positive even number
+}
+const parityLabel = isOdd(count) ? "odd" : "even";
+
 if (isSet(tags) && isNonEmptyArray(Array.from(tags))) {
   // non-empty set of tags
 }
 
 if (isOneOf(step, ["draft", "published"] as const)) {
   step satisfies "draft" | "published";
+}
+
+if (isPositive(score) && isBetween(score, 0, 100)) {
+  // score is a number from 0..100
+}
+
+if (isNonEmptyString(title)) {
+  // title is a non-empty string
+}
+
+if (isUUID(id)) {
+  // string id is a UUID
+}
+
+if (isISODateTime(timestamp)) {
+  // timestamp is a valid ISO date-time string with timezone
 }
 
 type Shape = { kind: "circle"; radius: number } | { kind: "square"; size: number };
@@ -184,14 +218,34 @@ titleCase("hello_world"); // "Hello World"
 
 ## Number helpers
 
-Numerical helpers for ranges, rounding, and percentages.
+Numerical helpers for ranges, rounding, percentages, and simple predicates.
 
 ```ts
-import { roundTo, inRange, toPercent } from "handy-ts-tools";
+import {
+  roundTo,
+  inRange,
+  toPercent,
+  isEven,
+  isOdd,
+  isGreaterThanZero,
+  isPositive,
+  isNegative,
+  isBetween,
+  isMultipleOf,
+  isInteger,
+} from "handy-ts-tools";
 
 roundTo(3.14159, 2); // 3.14
 inRange(5, 1, 10); // true
 toPercent(1, 4); // 25
+isEven(10); // true
+isOdd(7); // true
+isGreaterThanZero(-5); // false
+isPositive(42); // true
+isNegative(-1); // true
+isBetween(5, 0, 10); // true
+isInteger(3.1); // false
+isMultipleOf(12, 3); // true
 ```
 
 ## Promise helpers
@@ -345,8 +399,14 @@ import type {
   Falsy,
   Truthy,
   NonEmptyArray,
+  ReadonlyRecord,
   Mutable,
+  Writable,
+  DeepPartial,
+  NonEmptySet,
+  NonEmptyMap,
   DeepRequired,
+  Opaque,
 } from "handy-ts-tools";
 
 type User = { id: string; role?: string };
@@ -357,12 +417,25 @@ type OnlyExactUser = Exact<User, { id: string; role?: string }>; // narrows exce
 type StrictIntersection = UnionToIntersection<{ a: 1 } | { b: 2 }>; // { a:1 } & { b:2 }
 type AllRequired = DeepRequired<{ a?: { b?: number } }>; // { a: { b: number } }
 type Writable = Mutable<Readonly<User>>; // removes readonly
+type AlsoWritable = Writable<Readonly<User>>; // alias for the same intent
+type ReadonlySettings = ReadonlyRecord<"host" | "port", string>; // readonly keys/values
+type PartiallyOptional = DeepPartial<User>; // partial recursively
+type TaggedId = Opaque<string, "UserId">; // nominal brand
 type NullableId = Nullish<string>; // string | null | undefined
 
 type MaybeUser = Maybe<User>; // User | null | undefined
 type NonEmpty = NonEmptyArray<number>; // [number, ...number[]]
+type NonEmptyUserIds = NonEmptySet<string>;
+type NonEmptyDictionary = NonEmptyMap<string, number>;
 type FalsyValue = Falsy; // inferred union of falsy values
 type TruthyValue<T> = Truthy<T>; // removes falsy cases from T
+
+// Runtime brand helper pairs well with Opaque
+import { createBrand } from "handy-ts-tools";
+const { brand, isBrand } = createBrand<"OrderId">();
+const brandedOrderId = brand("123");
+isBrand(brandedOrderId); // true
+isBrand("123"); // false (primitives are boxed when branded, so only that boxed value passes)
 ```
 
 ## Namespaced imports

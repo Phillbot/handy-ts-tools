@@ -12,15 +12,33 @@ import {
   isNonEmptyArray,
   isNothing,
   isNumber,
+  isOdd,
+  isEven,
+  isInteger,
+  isFiniteNumber,
+  isPositive,
+  isNegative,
+  isBetween,
+  isMultipleOf,
   isObject,
+  isNonEmptyString,
+  isUUID,
+  isISODate,
+  isISODateTime,
   isOneOf,
   isPlainObject,
   isSet,
+  isNonEmptySet,
   isSomething,
   isString,
   isTrue,
   isNull,
   isUndefined,
+  isGreaterThanZero,
+  isNonEmptyMap,
+  hasKey,
+  isShallowEqual,
+  createBrand,
 } from "../src/typeguards.js";
 
 describe("typeguards", () => {
@@ -37,6 +55,31 @@ describe("typeguards", () => {
   it("checks numbers and arrays", () => {
     expect(isNumber(42)).toBe(true);
     expect(isNumber(NaN)).toBe(false);
+    expect(isFiniteNumber(2)).toBe(true);
+    expect(isFiniteNumber(Infinity)).toBe(false);
+    expect(isInteger(3)).toBe(true);
+    expect(isInteger(3.14)).toBe(false);
+    expect(isEven(2)).toBe(true);
+    expect(isEven(-2)).toBe(true);
+    expect(isEven(3)).toBe(false);
+    expect(isEven(2.5)).toBe(false);
+    expect(isOdd(3)).toBe(true);
+    expect(isOdd(-3)).toBe(true);
+    expect(isOdd(4)).toBe(false);
+    expect(isOdd(3.5)).toBe(false);
+    expect(isPositive(1)).toBe(true);
+    expect(isPositive(0)).toBe(false);
+    expect(isNegative(-1)).toBe(true);
+    expect(isNegative(0)).toBe(false);
+    expect(isBetween(5, 0, 5)).toBe(true);
+    expect(isBetween(5, 0, 5, false)).toBe(false);
+    expect(isMultipleOf(10, 5)).toBe(true);
+    expect(isMultipleOf(-9, 3)).toBe(true);
+    expect(() => isMultipleOf(2, 0)).toThrow();
+    expect(isGreaterThanZero(1)).toBe(true);
+    expect(isGreaterThanZero(0)).toBe(false);
+    expect(isGreaterThanZero(-1)).toBe(false);
+    expect(isGreaterThanZero(NaN)).toBe(false);
     expect(isNonEmptyArray([1])).toBe(true);
     expect(isNonEmptyArray([])).toBe(false);
   });
@@ -63,12 +106,16 @@ describe("typeguards", () => {
     expect(isSet([])).toBe(false);
     expect(isEmptySet(emptySet)).toBe(true);
     expect(isEmptySet(filledSet)).toBe(false);
+    expect(isNonEmptySet(filledSet)).toBe(true);
+    expect(isNonEmptySet(emptySet)).toBe(false);
     const filledMap = new Map([["a", 1]]);
     const emptyMap = new Map();
     expect(isMap(filledMap)).toBe(true);
     expect(isMap({})).toBe(false);
     expect(isEmptyMap(emptyMap)).toBe(true);
     expect(isEmptyMap(filledMap)).toBe(false);
+    expect(isNonEmptyMap(filledMap)).toBe(true);
+    expect(isNonEmptyMap(emptyMap)).toBe(false);
   });
 
   it("checks booleans and nullish helpers", () => {
@@ -93,6 +140,48 @@ describe("typeguards", () => {
     expect(isNull(undefined)).toBe(false);
     expect(isUndefined(undefined)).toBe(true);
     expect(isUndefined(null)).toBe(false);
+  });
+
+  it("validates string patterns", () => {
+    expect(isNonEmptyString("hello")).toBe(true);
+    expect(isNonEmptyString("")).toBe(false);
+    expect(isUUID("123e4567-e89b-12d3-a456-426614174000")).toBe(true);
+    expect(isUUID("not-a-uuid")).toBe(false);
+    expect(isISODate("2023-02-28")).toBe(true);
+    expect(isISODate("2023-02-30")).toBe(false);
+    expect(isISODateTime("2023-02-28T12:30:00Z")).toBe(true);
+    expect(isISODateTime("2023-02-28T25:00:00Z")).toBe(false);
+  });
+
+  it("narrows objects containing keys", () => {
+    const obj: { a?: number } = { a: 1 };
+    if (hasKey(obj, "a")) {
+      expect(obj.a).toBe(1);
+    }
+    expect(hasKey({ b: 2 }, "a" as const)).toBe(false);
+  });
+
+  it("performs shallow equality", () => {
+    expect(isShallowEqual([1, 2], [1, 2])).toBe(true);
+    expect(isShallowEqual([1, 2], [2, 1])).toBe(false);
+    expect(isShallowEqual({ a: 1, b: 2 }, { b: 2, a: 1 })).toBe(true);
+    expect(isShallowEqual({ a: 1 }, { a: 1, b: 2 })).toBe(false);
+    expect(isShallowEqual("a", "a")).toBe(true);
+    expect(isShallowEqual("a", "b")).toBe(false);
+  });
+
+  it("brands and guards values", () => {
+    const { brand, isBrand } = createBrand<"UserId">();
+    const rawObj = { id: 42 };
+    const brandedObj = brand(rawObj);
+    expect(isBrand(brandedObj)).toBe(true);
+    expect(isBrand({ id: 42 })).toBe(false);
+
+    const rawStr = "42";
+    const brandedStr = brand(rawStr);
+    expect(isBrand(brandedStr)).toBe(true);
+    expect(isBrand(rawStr)).toBe(false);
+    expect(String(brandedStr)).toBe(rawStr); // boxed primitive still coerces correctly
   });
 
   it("narrows discriminated unions by tag", () => {
