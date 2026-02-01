@@ -26,6 +26,8 @@
     "reborn": "pnpm run clean && pnpm run build && pnpm run test:all"
   },
   "devDependencies": {
+    "@types/node": "^25.1.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "tsd": "^0.30.0",
     "typescript": "^5.6.3",
     "vitest": "^4.0.9"

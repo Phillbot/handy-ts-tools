@@ -4,16 +4,25 @@
 
 /**
  * Returns the provided value. Useful as a default transform or placeholder resolver.
+ * 
+ * @example
+ * [1, 2].map(identity) // [1, 2]
  */
 export const identity = <T>(value: T): T => value;
 
 /**
  * A function that does nothing. Handy as a default callback or placeholder dependency.
+ * 
+ * @example
+ * const onClick = noop;
  */
-export const noop = (): void => {};
+export const noop = (): void => { };
 
 /**
  * Pipes a value through a list of unary functions from left to right.
+ * 
+ * @example
+ * const val = pipe(10, (x) => x * 2, (x) => x + 1); // 21
  */
 export function pipe<T>(value: T): T;
 export function pipe<T, A>(value: T, fn1: (input: T) => A): A;
@@ -37,6 +46,10 @@ export function pipe<T>(value: T, ...fns: Array<(input: unknown) => unknown>): u
 
 /**
  * Composes functions from right to left.
+ * 
+ * @example
+ * const fn = compose((x: number) => x + 1, (x: number) => x * 2);
+ * fn(10) // 21
  */
 export function compose<T>(): (value: T) => T;
 export function compose<T, A>(fn1: (input: T) => A): (value: T) => A;
@@ -58,6 +71,9 @@ export function compose<T>(...fns: Array<(input: unknown) => unknown>) {
 
 /**
  * Restricts a number to stay within the provided range.
+ * 
+ * @example
+ * clamp(10, 0, 5) // 5
  */
 export function clamp(value: number, min: number, max: number): number {
   if (min > max) {
@@ -69,6 +85,11 @@ export function clamp(value: number, min: number, max: number): number {
 
 /**
  * Wraps a function so it can only run once.
+ * 
+ * @example
+ * const init = once(() => console.log('init'));
+ * init(); // logs 'init'
+ * init(); // nothing
  */
 export function once<Args extends unknown[], R>(fn: (...args: Args) => R): (...args: Args) => R {
   let called = false;
@@ -84,6 +105,10 @@ export function once<Args extends unknown[], R>(fn: (...args: Args) => R): (...a
 
 /**
  * Memoizes a function using optional resolver for cache keys.
+ * 
+ * @example
+ * const slow = (n: number) => n * 2;
+ * const memo = memoize(slow);
  */
 export function memoize<Args extends unknown[], R>(
   fn: (...args: Args) => R,

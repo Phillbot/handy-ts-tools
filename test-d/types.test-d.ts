@@ -20,7 +20,10 @@ import type {
   Opaque,
 } from "../dist/types.js";
 import { assertNever } from "../dist/asserts.js";
-import { isDiscriminatedUnionMember } from "../dist/typeguards.js";
+import { isDiscriminatedUnionMember, isDeepEqual } from "../dist/typeguards.js";
+import { createComparator, chainComparators } from "../dist/comparators.js";
+import { deepMerge, flattenObject, unflattenObject, removeUndefined } from "../dist/object.js";
+import { DisposableStore } from "../dist/lifecycle.js";
 
 // Exact should reject extra keys in either direction
 type Shape = { a: string; b?: number };
@@ -121,3 +124,40 @@ if (isDiscriminatedUnionMember(maybeKinded, "kind", "a")) {
 } else {
   expectType<{ kind: "b"; b: string }>(maybeKinded);
 }
+
+// createComparator inference
+interface User { id: number; name: string }
+const byId = createComparator<User>((u: User) => u.id);
+expectType<(a: User, b: User) => number>(byId);
+expectError(() => createComparator<User>(u => u.missing_property_name));
+expectError(() => createComparator<User>(u => u.id.toLowerCase())); // error: number has no toLowerCase
+
+// chainComparators
+const chained = chainComparators(byId, createComparator<User>((u: User) => u.name));
+expectType<(a: User, b: User) => number>(chained);
+
+// isDeepEqual
+expectType<boolean>(isDeepEqual({ a: 1 }, { a: 1 }));
+
+// removeUndefined return type
+const resultRU = removeUndefined({ a: 1, b: undefined as number | undefined });
+expectType<Partial<{ a: number; b: number | undefined }>>(resultRU);
+
+// deepMerge
+const merged = deepMerge({ a: { b: 1 } }, { a: { c: 2 } });
+expectType<{ a: { b: number } }>(merged);
+
+// flattenObject / unflattenObject
+const flattened = flattenObject({ a: { b: 1 } });
+expectType<Record<string, any>>(flattened);
+const unflattened = unflattenObject(flattened);
+expectType<object>(unflattened);
+
+// DisposableStore
+const store = new DisposableStore();
+const d1 = { dispose: () => { } };
+const d2 = { dispose: () => { } };
+const d = store.add(d1);
+expectType<{ dispose: () => void }>(d);
+const ds = store.add(d1, d2);
+expectType<{ dispose: () => void }[]>(ds);

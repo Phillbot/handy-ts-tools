@@ -4,11 +4,18 @@
 
 /**
  * Extracts values of an object type.
+ * 
+ * @example
+ * type User = { id: number; name: string };
+ * type Values = ValueOf<User>; // number | string
  */
 export type ValueOf<T> = T[keyof T];
 
 /**
  * Requires at least one of the provided keys to be present.
+ * 
+ * @example
+ * type Options = RequireAtLeastOne<{ a?: string; b?: number }, 'a' | 'b'>;
  */
 export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Keys extends keyof T
   ? Pick<T, Exclude<keyof T, Keys>> & Required<Pick<T, Keys>>
@@ -16,6 +23,9 @@ export type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Keys extends 
 
 /**
  * Deeply marks every property as readonly.
+ * 
+ * @example
+ * type ReadonlyUser = DeepReadonly<{ profile: { name: string } }>;
  */
 export type DeepReadonly<T> = T extends (...args: unknown[]) => unknown
   ? T
@@ -27,30 +37,56 @@ export type DeepReadonly<T> = T extends (...args: unknown[]) => unknown
 
 /**
  * Ensures two types match exactly (no extra keys permitted).
+ * 
+ * @example
+ * type Strict = Exact<{ a: 1 }, { a: 1 }>;
  */
 export type Exact<T, Shape> = T extends Shape ? (Shape extends T ? T : never) : never;
 
 /**
  * Converts a union into an intersection.
+ * 
+ * @example
+ * type Combined = UnionToIntersection<{ a: 1 } | { b: 2 }>; // { a: 1 } & { b: 2 }
  */
 export type UnionToIntersection<T> = (T extends T ? (x: T) => void : never) extends (x: infer R) => void ? R : never;
 
 /** Convenience alias for nullable/undefined. */
 export type Nullish = null | undefined;
 
-/** Marks value as optional (null or undefined). */
+/**
+ * Marks value as optional (null or undefined).
+ * 
+ * @example
+ * type MaybeString = Maybe<string>; // string | null | undefined
+ */
 export type Maybe<T> = T | Nullish;
 
 /** Values treated as falsy in JavaScript. */
 export type Falsy = false | 0 | -0 | 0n | "" | null | undefined;
 
-/** Removes falsy values from union. */
+/**
+ * Removes falsy values from union.
+ * 
+ * @example
+ * type Active = Truthy<string | null>; // string
+ */
 export type Truthy<T> = T extends Falsy ? never : T;
 
-/** Tuple with at least one element. */
+/**
+ * Tuple with at least one element.
+ * 
+ * @example
+ * type Items = NonEmptyArray<number>;
+ */
 export type NonEmptyArray<T> = readonly [T, ...T[]];
 
-/** Readonly Record alias for constrained keys/values. */
+/**
+ * Readonly Record alias for constrained keys/values.
+ * 
+ * @example
+ * type Config = ReadonlyRecord<string, number>;
+ */
 export type ReadonlyRecord<K extends PropertyKey, V> = Readonly<Record<K, V>>;
 
 /** Non-empty Set shape (size > 0 at runtime). */
@@ -81,5 +117,10 @@ export type DeepRequired<T> = T extends (...args: unknown[]) => unknown
   ? { [K in keyof T]-?: DeepRequired<T[K]> }
   : T;
 
-/** Opaque/brand type to prevent mixing structurally-identical values. */
+/**
+ * Opaque/brand type to prevent mixing structurally-identical values.
+ * 
+ * @example
+ * type UserId = Opaque<string, 'UserId'>;
+ */
 export type Opaque<Type, Token extends string | symbol> = Type & { readonly __brand: Token };

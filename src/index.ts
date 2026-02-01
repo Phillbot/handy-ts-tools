@@ -11,6 +11,10 @@ export * from "./number";
 export * from "./error";
 export * from "./enum";
 export * from "./algorithms";
+export * from "./platform";
+export * from "./comparators";
+export * from "./lifecycle";
+export * from "./async";
 
 export * as Asserts from "./asserts";
 export * as TypeGuards from "./typeguards";
@@ -25,3 +29,7 @@ export * as NumberUtils from "./number";
 export * as ErrorUtils from "./error";
 export * as EnumUtils from "./enum";
 export * as Algorithms from "./algorithms";
+export * as PlatformUtils from "./platform";
+export * as Comparators from "./comparators";
+export * as Lifecycle from "./lifecycle";
+export * as Async from "./async";

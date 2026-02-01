@@ -1,6 +1,9 @@
 /**
  * Finds index of target in sorted array using comparator.
  * Complexity: O(log n)
+ * 
+ * @example
+ * binarySearch([1, 2, 3], 2, (a, b) => a - b) // 1
  */
 export function binarySearch<T>(items: readonly T[], target: T, comparator: (a: T, b: T) => number): number {
   let left = 0;
@@ -23,6 +26,9 @@ export function binarySearch<T>(items: readonly T[], target: T, comparator: (a: 
 /**
  * Removes duplicates by projecting each item to a key.
  * Complexity: O(n)
+ * 
+ * @example
+ * uniqueBy([{ id: 1 }, { id: 1 }], (x) => x.id) // [{ id: 1 }]
  */
 export function uniqueBy<T, K>(items: Iterable<T>, selector: (item: T) => K): T[] {
   const seen = new Set<K>();
@@ -40,6 +46,9 @@ export function uniqueBy<T, K>(items: Iterable<T>, selector: (item: T) => K): T[
 /**
  * Performs Kahn's topological sort. Throws if a cycle is detected.
  * Complexity: O(V + E)
+ * 
+ * @example
+ * topologicalSort([1, 2], [[1, 2]]) // [1, 2]
  */
 export function topologicalSort<T>(nodes: Iterable<T>, edges: Iterable<[T, T]>): T[] {
   const graph = new Map<T, Set<T>>();
@@ -89,6 +98,9 @@ export function topologicalSort<T>(nodes: Iterable<T>, edges: Iterable<[T, T]>):
 /**
  * Breadth-first search yielding nodes in discovery order.
  * Complexity: O(V + E)
+ * 
+ * @example
+ * bfs(new Map([[1, [2]]]), 1) // [1, 2]
  */
 export function bfs<T>(graph: Map<T, Iterable<T>>, start: T): T[] {
   const visited = new Set<T>();
@@ -111,6 +123,9 @@ export function bfs<T>(graph: Map<T, Iterable<T>>, start: T): T[] {
 /**
  * Depth-first search yielding nodes in visitation order.
  * Complexity: O(V + E)
+ * 
+ * @example
+ * dfs(new Map([[1, [2]]]), 1) // [1, 2]
  */
 export function dfs<T>(graph: Map<T, Iterable<T>>, start: T): T[] {
   const visited = new Set<T>();
@@ -129,6 +144,9 @@ export function dfs<T>(graph: Map<T, Iterable<T>>, start: T): T[] {
 /**
  * Selects k-th smallest element without full sorting.
  * Average complexity: O(n)
+ * 
+ * @example
+ * quickSelect([3, 1, 2], 0, (a, b) => a - b) // 1
  */
 export function quickSelect<T>(items: T[], k: number, comparator: (a: T, b: T) => number): T {
   if (k < 0 || k >= items.length) {
@@ -168,6 +186,9 @@ export function quickSelect<T>(items: T[], k: number, comparator: (a: T, b: T) =
 /**
  * Stable merge sort using scratch buffer.
  * Complexity: O(n log n)
+ * 
+ * @example
+ * mergeSort([3, 1, 2], (a, b) => a - b) // [1, 2, 3]
  */
 export function mergeSort<T>(items: readonly T[], comparator: (a: T, b: T) => number): T[] {
   if (items.length <= 1) return copyArray(items);
@@ -219,6 +240,9 @@ function merge<T>(
 /**
  * Returns the k smallest values using quickselect partitioning.
  * Complexity: O(n) average
+ * 
+ * @example
+ * kSmallest([3, 1, 2], 2, (a, b) => a - b) // [1, 2]
  */
 export function kSmallest<T>(items: readonly T[], k: number, comparator: (a: T, b: T) => number): T[] {
   if (k <= 0) return [];
@@ -245,6 +269,9 @@ export interface TreeNode<T> {
 /**
  * Performs a DFS traversal on a tree structure.
  * Complexity: O(V)
+ * 
+ * @example
+ * traverseTree({ value: 1, children: [{ value: 2 }] }, (n) => console.log(n.value))
  */
 export function traverseTree<T>(root: TreeNode<T>, visitor: (node: TreeNode<T>) => void): void {
   visitor(root);
@@ -256,6 +283,9 @@ export function traverseTree<T>(root: TreeNode<T>, visitor: (node: TreeNode<T>) 
 /**
  * Computes mean/median/min/max from numeric iterable.
  * Complexity: O(n log n) due to sorting for median.
+ * 
+ * @example
+ * summarize([1, 2, 3]) // { min: 1, max: 3, mean: 2, median: 2, sum: 6, count: 3 }
  */
 export function summarize(values: Iterable<number>) {
   const arr: number[] = [];
@@ -291,6 +321,11 @@ function copyArray<T>(items: readonly T[]): T[] {
 /**
  * Min-heap backed priority queue.
  * push/pop complexity: O(log n)
+ * 
+ * @example
+ * const pq = new PriorityQueue<number>((a, b) => a - b);
+ * pq.push(10);
+ * pq.pop(); // 10
  */
 export class PriorityQueue<T> {
   private heap: T[] = [];
@@ -356,6 +391,11 @@ export class PriorityQueue<T> {
 /**
  * Union-find (disjoint set) structure with path compression/rank.
  * find/union amortized complexity: ~O(α(n))
+ * 
+ * @example
+ * const uf = new UnionFind<number>();
+ * uf.union(1, 2);
+ * uf.find(1) === uf.find(2); // true
  */
 export class UnionFind<T> {
   private parent = new Map<T, T>();
@@ -394,6 +434,9 @@ export class UnionFind<T> {
 /**
  * Dijkstra shortest path for weighted graphs.
  * Complexity: O(E log V)
+ * 
+ * @example
+ * dijkstra(new Map([[1, [[2, 10]]]]), 1) // Map { 1 => 0, 2 => 10 }
  */
 export function dijkstra<T>(graph: Map<T, Array<[T, number]>>, start: T): Map<T, number> {
   const distances = new Map<T, number>();
@@ -417,6 +460,9 @@ export function dijkstra<T>(graph: Map<T, Array<[T, number]>>, start: T): Map<T,
 /**
  * Generates all k-combinations without recursion.
  * Complexity: O(C(n, k))
+ * 
+ * @example
+ * combinations([1, 2, 3], 2) // [[1, 2], [1, 3], [2, 3]]
  */
 export function combinations<T>(items: readonly T[], k: number): T[][] {
   if (k <= 0) return [[]];
@@ -441,6 +487,9 @@ export function combinations<T>(items: readonly T[], k: number): T[][] {
 /**
  * Generates all permutations using Heap's algorithm.
  * Complexity: O(n!)
+ * 
+ * @example
+ * permutations([1, 2]) // [[1, 2], [2, 1]]
  */
 export function permutations<T>(items: readonly T[]): T[][] {
   const arr = copyArray(items);
@@ -468,6 +517,9 @@ export function permutations<T>(items: readonly T[]): T[][] {
 /**
  * Bubble sort for educational purposes.
  * Complexity: O(n^2)
+ * 
+ * @example
+ * bubbleSort([3, 1, 2], (a, b) => a - b) // [1, 2, 3]
  */
 export function bubbleSort<T>(items: readonly T[], comparator: (a: T, b: T) => number): T[] {
   const arr = copyArray(items);

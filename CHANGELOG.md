@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented here.
 
+## [2.0.0] - 2026-02-01
+
+### Added
+
+- **Comparators Engine**: Type-safe sorting with `createComparator`, `chainComparators`, and `reverseComparator`.
+- **Deep Object Utilities**: High-performance recursive merging, flattening, and unflattening of objects.
+- **Lifecycle & Resource Management**: `DisposableStore` and `IDisposable` pattern for leak-proof cleanup.
+- **Async Resilience**: `debounce`, `throttle`, and enhanced `retry` logic.
+- **Improved Type Guards**: Added `isDeepEqual`, `isDisposable`, and more granular primitive checks.
+- **Platform Awareness**: Environment detection with `isBrowser`, `isNode`, and `isTouchDevice`.
+
+### Enhanced
+
+- **100% Type Safety**: Removed all `any` holes; every core utility is now strictly typed.
+- **Full Documentation**: Exhaustive JSDoc examples and a comprehensive `DOCS.md`.
+- **High Test Coverage**: Reached >98% line coverage across the entire codebase.
+- **Type-Level Testing**: Integrated `tsd` for verifying type inference in CI.
+
+### Changed
+
+- Refined `pick`, `omit`, and `removeUndefined` for better edge-case handling.
+- Optimized `PriorityQueue` and `UnionFind` implementations.
+
+---
+
 ## [1.3.1] - 2025-11-16
 
 - Document existing namespace exports (`Algorithms`, `IterableUtils`, `Asserts`, etc.) and root-only imports in README/DOCS; add full usage guide.

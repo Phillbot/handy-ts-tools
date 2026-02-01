@@ -1,9 +1,14 @@
+import { isPlainObject } from "./typeguards.js";
+
 /**
  * Object-specific helpers.
  */
 
 /**
  * Picks the provided keys from the source object.
+ * 
+ * @example
+ * pick({ a: 1, b: 2 }, ['a']) // { a: 1 }
  */
 export function pick<T extends object, K extends readonly (keyof T)[]>(source: T, keys: K): Pick<T, K[number]> {
   const result: Partial<T> = {};
@@ -17,6 +22,9 @@ export function pick<T extends object, K extends readonly (keyof T)[]>(source: T
 
 /**
  * Ensures the provided value is a Set (reuses the instance when possible).
+ * 
+ * @example
+ * ensureSet([1, 2]) // Set { 1, 2 }
  */
 export function ensureSet<T>(value: Iterable<T> | Set<T>): Set<T> {
   return value instanceof Set ? value : new Set(value);
@@ -24,6 +32,9 @@ export function ensureSet<T>(value: Iterable<T> | Set<T>): Set<T> {
 
 /**
  * Ensures the provided value is a Map (reuses the instance when possible).
+ * 
+ * @example
+ * ensureMap([['a', 1]]) // Map { 'a' => 1 }
  */
 export function ensureMap<K, V>(value: Iterable<readonly [K, V]> | Map<K, V>): Map<K, V> {
   return value instanceof Map ? value : new Map(value);
@@ -31,6 +42,9 @@ export function ensureMap<K, V>(value: Iterable<readonly [K, V]> | Map<K, V>): M
 
 /**
  * Creates a shallow copy without specified keys.
+ * 
+ * @example
+ * omit({ a: 1, b: 2 }, ['a']) // { b: 2 }
  */
 export function omit<T extends object, K extends readonly (keyof T)[]>(source: T, keys: K): Omit<T, K[number]> {
   const result: Partial<T> = {};
@@ -45,13 +59,35 @@ export function omit<T extends object, K extends readonly (keyof T)[]>(source: T
 
 /**
  * Shallowly merges multiple objects (later sources override earlier keys).
+ * 
+ * @example
+ * merge({ a: 1 }, { b: 2 }) // { a: 1, b: 2 }
  */
 export function merge<T extends object, U extends object>(target: T, ...sources: U[]): T & U {
   return Object.assign({}, target, ...sources) as T & U;
 }
 
 /**
+ * Removes undefined properties from an object (non-recursive).
+ * 
+ * @example
+ * removeUndefined({ a: 1, b: undefined }) // { a: 1 }
+ */
+export function removeUndefined<T extends object>(obj: T): Partial<T> {
+  const result: Partial<T> = {};
+  for (const key in obj) {
+    if (obj[key] !== undefined) {
+      result[key] = obj[key];
+    }
+  }
+  return result;
+}
+
+/**
  * Traverses `path` safely, returning `undefined` for missing nodes.
+ * 
+ * @example
+ * deepGet({ a: { b: 1 } }, ['a', 'b']) // 1
  */
 export function deepGet<T extends object, R = unknown>(source: T, path: readonly (keyof any)[]): R | undefined {
   let current: unknown = source;
@@ -66,6 +102,9 @@ export function deepGet<T extends object, R = unknown>(source: T, path: readonly
 
 /**
  * Writes value at the nested path, creating intermediate objects as needed.
+ * 
+ * @example
+ * deepSet({}, ['a', 'b'], 1) // { a: { b: 1 } }
  */
 export function deepSet<T extends object, V>(source: T, path: readonly (keyof any)[], value: V): T {
   if (path.length === 0) {
@@ -81,4 +120,63 @@ export function deepSet<T extends object, V>(source: T, path: readonly (keyof an
   });
   (current as Record<PropertyKey, unknown>)[path[path.length - 1]] = value;
   return source;
+}
+
+/**
+ * Deeply merges multiple objects. Arrays and primitives are overwritten, 
+ * but plain objects are merged recursively.
+ * 
+ * @example
+ * deepMerge({ a: { b: 1 } }, { a: { c: 2 } }) // { a: { b: 1, c: 2 } }
+ */
+export function deepMerge<T extends object>(target: T, ...sources: object[]): T {
+  for (const source of sources) {
+    if (!isPlainObject(source)) continue;
+
+    for (const key in source) {
+      const targetVal = (target as any)[key];
+      const sourceVal = (source as any)[key];
+
+      if (isPlainObject(targetVal) && isPlainObject(sourceVal)) {
+        deepMerge(targetVal, sourceVal);
+      } else {
+        (target as any)[key] = sourceVal;
+      }
+    }
+  }
+  return target;
+}
+
+/**
+ * Flattens a nested object into a single-level object with dot-notation keys.
+ * 
+ * @example
+ * flattenObject({ a: { b: 1 } }) // { 'a.b': 1 }
+ */
+export function flattenObject(obj: object, prefix = '', result: Record<string, any> = {}): Record<string, any> {
+  for (const key in obj) {
+    const value = (obj as any)[key];
+    const newKey = prefix ? `${prefix}.${key}` : key;
+
+    if (isPlainObject(value)) {
+      flattenObject(value, newKey, result);
+    } else {
+      result[newKey] = value;
+    }
+  }
+  return result;
+}
+
+/**
+ * Converts a flattened object with dot-notation keys back into a nested object.
+ * 
+ * @example
+ * unflattenObject({ 'a.b': 1 }) // { a: { b: 1 } }
+ */
+export function unflattenObject(obj: Record<string, any>): object {
+  const result = {};
+  for (const key in obj) {
+    deepSet(result, key.split('.'), obj[key]);
+  }
+  return result;
 }

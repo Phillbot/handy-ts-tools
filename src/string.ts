@@ -4,6 +4,9 @@
 
 /**
  * Ensures a string starts with the provided prefix.
+ * 
+ * @example
+ * ensurePrefix('foo', 'pre-') // 'pre-foo'
  */
 export function ensurePrefix(value: string, prefix: string): string {
   return value.startsWith(prefix) ? value : `${prefix}${value}`;
@@ -11,6 +14,9 @@ export function ensurePrefix(value: string, prefix: string): string {
 
 /**
  * Ensures a string ends with the provided suffix.
+ * 
+ * @example
+ * ensureSuffix('foo', '-post') // 'foo-post'
  */
 export function ensureSuffix(value: string, suffix: string): string {
   return value.endsWith(suffix) ? value : `${value}${suffix}`;
@@ -18,6 +24,9 @@ export function ensureSuffix(value: string, suffix: string): string {
 
 /**
  * Capitalizes the first character of the string.
+ * 
+ * @example
+ * capitalize('hello') // 'Hello'
  */
 export function capitalize(value: string): string {
   if (!value) {
@@ -28,6 +37,9 @@ export function capitalize(value: string): string {
 
 /**
  * Truncates the string to a certain length and adds an ellipsis if needed.
+ * 
+ * @example
+ * truncate('hello world', 5) // 'he...'
  */
 export function truncate(value: string, maxLength: number, ellipsis = "..."): string {
   if (maxLength < 0) {
@@ -63,6 +75,9 @@ function splitWords(value: string): string[] {
 
 /**
  * Converts text to camelCase (`handy_ts-tools` -> `handyTsTools`).
+ * 
+ * @example
+ * camelCase('handy_ts-tools') // 'handyTsTools'
  */
 export function camelCase(value: string): string {
   const words = splitWords(value.toLowerCase());
@@ -74,6 +89,9 @@ export function camelCase(value: string): string {
 
 /**
  * Converts text to kebab-case.
+ * 
+ * @example
+ * kebabCase('handyTsTools') // 'handy-ts-tools'
  */
 export function kebabCase(value: string): string {
   return splitWords(value).map((word) => word.toLowerCase()).join("-");
@@ -81,6 +99,9 @@ export function kebabCase(value: string): string {
 
 /**
  * Converts text to snake_case.
+ * 
+ * @example
+ * snakeCase('handyTsTools') // 'handy_ts_tools'
  */
 export function snakeCase(value: string): string {
   return splitWords(value).map((word) => word.toLowerCase()).join("_");
@@ -88,6 +109,9 @@ export function snakeCase(value: string): string {
 
 /**
  * Converts text to Title Case.
+ * 
+ * @example
+ * titleCase('hello-world') // 'Hello World'
  */
 export function titleCase(value: string): string {
   return splitWords(value)

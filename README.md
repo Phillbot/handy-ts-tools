@@ -1,6 +1,6 @@
-# handy-ts-tools
+# handy-ts-tools (v2.0)
 
-Small TypeScript-first toolkit with no runtime dependencies. All helpers, guards, and types are exported from the single entrypoint `handy-ts-tools`. Categories are for orientation only (functional, iterable/async-iterable, object, string, number, promise, error, enum, algorithms, typeguards, asserts, and type utilities like `ValueOf`, `RequireAtLeastOne`, `DeepReadonly`).
+Small, professional TypeScript toolkit with zero runtime dependencies. Provides high-performance utilities, strict type guards, and advanced resource management patterns. Categories include: functional, lifecycle, comparators, iterable/async-iterable, object (deep & shallow), string, number, promise, error, enum, algorithms, typeguards, asserts, and comprehensive type utilities.
 
 ## Usage
 
@@ -26,7 +26,10 @@ if (isNonEmptyArray(payload.items)) {
   console.log(listTitle, firstThree);
 }
 
-const asyncStream = mapAsyncIterable(payload.asyncItems, (item) => ({ ...item, hydrated: true }));
+const asyncStream = mapAsyncIterable(payload.asyncItems, (item) => ({
+  ...item,
+  hydrated: true,
+}));
 const buffered = await toArrayAsync(asyncStream);
 console.log("ready", buffered, completedPercent);
 ```
@@ -52,10 +55,15 @@ const request: FetchOptions = { email: "user@example.com" };
 ## What's inside
 
 All exports come from the root entrypoint. The library includes:
-- Runtime guards (`isDefined`, `isPlainObject`, `isDiscriminatedUnionMember`, etc.) and lightweight asserts.
-- Functional/iterable helpers (sync and async), string/number/object/promise/error/enum utilities.
-- Algorithms (search/sort/graph, priority queue, union-find, combinations/permutations).
-- Type-level helpers (`ValueOf`, `RequireAtLeastOne`, `DeepReadonly`, `Exact`, `UnionToIntersection`, `DeepRequired`, `ReadonlyRecord`, `DeepPartial`, `Opaque`, etc.).
+
+- **Zero-Any Type Safety**: Every core utility is strictly typed with precise inference.
+- **Runtime Guards & Asserts**: Comprehensive narrowing for primitives, objects, and discriminated unions.
+- **Resource Management**: `DisposableStore` for leak-proof cleanup (lifecycle).
+- **Comparison Engine**: Type-safe sorting with `createComparator` and `chainComparators`.
+- **Advanced Object Utils**: High-performance recursive merging, flattening, and dot-notation mapping.
+- **Functional & Iterables**: Composable logic for sync/async streams and everyday patterns.
+- **Algorithms**: Classical structures (PQ, UnionFind) and graph/search algorithms.
+- **Type Utilities**: `ValueOf`, `RequireAtLeastOne`, `DeepReadonly`, `Exact`, `Opaque`, and more.
 
 ## Development
 
@@ -90,7 +98,13 @@ import {
 Namespaced imports are also exposed for grouping by domain:
 
 ```ts
-import { Asserts, TypeGuards, Algorithms, IterableUtils, AsyncIterableUtils } from "handy-ts-tools";
+import {
+  Asserts,
+  TypeGuards,
+  Algorithms,
+  IterableUtils,
+  AsyncIterableUtils,
+} from "handy-ts-tools";
 
 Asserts.assert(true);
 TypeGuards.isPlainObject(value);

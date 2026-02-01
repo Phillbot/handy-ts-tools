@@ -4,6 +4,10 @@
 
 /**
  * Checks if the value resembles an Error object.
+ * 
+ * @example
+ * isErrorLike(new Error('foo')) // true
+ * isErrorLike({ message: 'bar' }) // false (missing name)
  */
 export function isErrorLike(value: unknown): value is Error {
   return (
@@ -17,6 +21,9 @@ export function isErrorLike(value: unknown): value is Error {
 
 /**
  * Wraps a synchronous or async function and makes sure thrown errors contain the provided message.
+ * 
+ * @example
+ * const safeFetch = wrapError(fetch, 'Fetch failed');
  */
 export function wrapError<Args extends unknown[], R>(
   fn: (...args: Args) => R | Promise<R>,
@@ -43,6 +50,9 @@ export interface RetryOptions {
 
 /**
  * Retries an async operation with optional delay and predicate hooks.
+ * 
+ * @example
+ * await retry(() => doWork(), { retries: 3, delayMs: 100 })
  */
 export async function retry<T>(operation: () => Promise<T>, options: RetryOptions = {}): Promise<T> {
   const { retries = 3, delayMs = 0, shouldRetry } = options;
@@ -63,5 +73,6 @@ export async function retry<T>(operation: () => Promise<T>, options: RetryOption
   }
 
   // This line is never reached, but TypeScript needs a return.
+  /* v8 ignore next 2 */
   throw new Error("retry: unreachable");
 }

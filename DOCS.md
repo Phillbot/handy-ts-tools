@@ -93,8 +93,13 @@ if (isISODateTime(timestamp)) {
   // timestamp is a valid ISO date-time string with timezone
 }
 
-type Shape = { kind: "circle"; radius: number } | { kind: "square"; size: number };
-const isCircle = isDiscriminatedUnionMember<Shape, "kind", "circle">("kind", "circle");
+type Shape =
+  | { kind: "circle"; radius: number }
+  | { kind: "square"; size: number };
+const isCircle = isDiscriminatedUnionMember<Shape, "kind", "circle">(
+  "kind",
+  "circle",
+);
 if (isCircle(shape)) {
   shape.radius;
 }
@@ -105,7 +110,15 @@ if (isCircle(shape)) {
 Tiny composable helpers for everyday functional patterns.
 
 ```ts
-import { identity, noop, pipe, compose, once, memoize, clamp } from "handy-ts-tools";
+import {
+  identity,
+  noop,
+  pipe,
+  compose,
+  once,
+  memoize,
+  clamp,
+} from "handy-ts-tools";
 
 const capped = clamp(value, 0, 100);
 
@@ -150,9 +163,7 @@ const numbers = [1, 2, 3, 4, 5];
 toArray(take(numbers, 3)); // [1, 2, 3]
 toArray(filterIterable(numbers, (n) => n % 2 === 0)); // [2, 4]
 
-toArray(
-  flatMapIterable(["a", "b"], (ch) => [ch, ch.toUpperCase()]),
-); // ["a", "A", "b", "B"]
+toArray(flatMapIterable(["a", "b"], (ch) => [ch, ch.toUpperCase()])); // ["a", "A", "b", "B"]
 
 chunk(numbers, 2); // [[1,2],[3,4],[5]]
 groupBy(numbers, (n) => (n % 2 === 0 ? "even" : "odd")); // Map { "odd" => [1,3,5], "even" => [2,4] }
@@ -167,7 +178,13 @@ toArray(zip([1, 2], ["a", "b"])); // [[1, "a"], [2, "b"]]
 Work with streaming async data the same way you do with sync iterables.
 
 ```ts
-import { toArrayAsync, mapAsyncIterable, filterAsyncIterable, takeAsync, reduceAsyncIterable } from "handy-ts-tools";
+import {
+  toArrayAsync,
+  mapAsyncIterable,
+  filterAsyncIterable,
+  takeAsync,
+  reduceAsyncIterable,
+} from "handy-ts-tools";
 
 async function example(stream: AsyncIterable<number>) {
   const firstTwo = await toArrayAsync(takeAsync(stream, 2));
@@ -182,7 +199,15 @@ async function example(stream: AsyncIterable<number>) {
 Safe object transforms: projections, deep access, and builders.
 
 ```ts
-import { pick, omit, merge, deepGet, deepSet, ensureSet, ensureMap } from "handy-ts-tools";
+import {
+  pick,
+  omit,
+  merge,
+  deepGet,
+  deepSet,
+  ensureSet,
+  ensureMap,
+} from "handy-ts-tools";
 
 pick({ a: 1, b: 2 }, ["a"]); // { a: 1 }
 omit({ a: 1, b: 2 }, ["b"]); // { a: 1 }
@@ -193,10 +218,45 @@ deepGet(cfg, ["server", "host"]); // "localhost"
 deepSet(cfg, ["server", "port"], 3000); // mutates cfg.server.port = 3000
 
 ensureSet([1, 2, 2]); // Set {1,2}
-ensureMap([
-  ["a", 1],
-  ["b", 2],
-]); // Map { "a" => 1, "b" => 2 }
+ensureMap(
+  [
+    ["a", 1],
+    ["b", 2],
+  ],
+  "Map { 'a' => 1, 'b' => 2 }",
+);
+
+deepMerge({ a: { b: 1 } }, { a: { c: 2 } }); // { a: { b: 1, c: 2 } }
+flattenObject({ a: { b: 1 } }); // { 'a.b': 1 }
+unflattenObject({ "a.b": 1 }); // { a: { b: 1 } }
+removeUndefined({ a: 1, b: undefined }); // { a: 1 }
+```
+
+## Comparators
+
+Type-safe sorting utilities for complex objects.
+
+```ts
+import { createComparator, chainComparators, reverseComparator } from "handy-ts-tools";
+
+interface User { id: number; name: string; age: number }
+const users: User[] = [...];
+
+// Sort by age (asc)
+users.sort(createComparator(u => u.age));
+
+// Sort by name (desc)
+users.sort(createComparator(u => u.name, 'desc'));
+
+// Multi-level sort: by name, then by age
+const sort = chainComparators(
+  createComparator<User>(u => u.name),
+  createComparator<User>(u => u.age)
+);
+users.sort(sort);
+
+// Invert any comparator
+const inverted = reverseComparator(createComparator(u => u.id));
 ```
 
 ## String helpers
@@ -204,7 +264,16 @@ ensureMap([
 Small text utilities for common formatting tasks.
 
 ```ts
-import { ensurePrefix, ensureSuffix, capitalize, truncate, camelCase, kebabCase, snakeCase, titleCase } from "handy-ts-tools";
+import {
+  ensurePrefix,
+  ensureSuffix,
+  capitalize,
+  truncate,
+  camelCase,
+  kebabCase,
+  snakeCase,
+  titleCase,
+} from "handy-ts-tools";
 
 ensurePrefix("world", "hello "); // "hello world"
 ensureSuffix("file", ".txt"); // "file.txt"
@@ -275,7 +344,10 @@ try {
   }
 }
 
-const load = wrapError(async (id: string) => fetch(`/api/${id}`), "Load failed");
+const load = wrapError(
+  async (id: string) => fetch(`/api/${id}`),
+  "Load failed",
+);
 const result = await load("123"); // errors get prefixed
 
 await retry(
@@ -284,6 +356,31 @@ await retry(
   },
   { retries: 3, delayMs: 100, shouldRetry: (err, attempt) => attempt < 3 },
 );
+```
+
+## Lifecycle Management
+
+Resource management using the Disposable pattern.
+
+```ts
+import { DisposableStore, toDisposable, isDisposable } from "handy-ts-tools";
+
+// Manage multiple resources
+const store = new DisposableStore();
+
+const timer = setInterval(() => {}, 1000);
+store.add(toDisposable(() => clearInterval(timer)));
+
+const sub = event.subscribe(() => {});
+store.add(sub); // sub implements IDisposable { dispose(): void }
+
+// Clean up everything at once
+store.dispose();
+
+// Type safety
+if (isDisposable(anything)) {
+  anything.dispose();
+}
 ```
 
 ## Enum helpers
@@ -359,16 +456,12 @@ bubbleSort([5, 4, 3]); // [3,4,5]
 quickSelect([9, 1, 5, 2], 2); // 5 (0-based order statistic)
 kSmallest([9, 1, 5, 2], 2); // [1,2]
 
-bfs(
-  { a: ["b", "c"], b: ["d"], c: [], d: [] },
-  "a",
-  (node) => console.log(node),
+bfs({ a: ["b", "c"], b: ["d"], c: [], d: [] }, "a", (node) =>
+  console.log(node),
 );
 
-dfs(
-  { a: ["b", "c"], b: ["d"], c: [], d: [] },
-  "a",
-  (node) => console.log(node),
+dfs({ a: ["b", "c"], b: ["d"], c: [], d: [] }, "a", (node) =>
+  console.log(node),
 );
 
 summarize([1, 1, 2, 3]); // Map {1 => 2, 2 => 1, 3 => 1}
@@ -470,7 +563,9 @@ const merged = ObjectUtils.merge({ a: 1 }, { b: 2 });
 const cased = StringUtils.camelCase("hello-world");
 const rounded = NumberUtils.roundTo(3.14159, 2);
 const deferred = PromiseUtils.createDeferred<number>();
-const wrapped = ErrorUtils.wrapError(() => { throw new Error("x"); }, "msg");
+const wrapped = ErrorUtils.wrapError(() => {
+  throw new Error("x");
+}, "msg");
 const parsed = EnumUtils.parseEnumValue({ A: "a" }, "a");
 const sorted = Algorithms.mergeSort([3, 1, 2], (a, b) => a - b);
 type ExactUser = Types.Exact<{ id: string }, { id: string }>;

@@ -10,6 +10,11 @@ export interface ParseEnumOptions<T> {
 /**
  * Attempts to convert an unknown input into one of the enum values. Returns `undefined`
  * (or provided fallback) when no match is found.
+ * 
+ * @example
+ * enum Color { Red = 'red', Green = 'green' }
+ * parseEnumValue(Color, 'red') // Color.Red
+ * parseEnumValue(Color, 'BLUE', { fallback: Color.Red, caseInsensitive: true }) // Color.Red
  */
 export function parseEnumValue<
   TEnum extends Record<string, string | number>,

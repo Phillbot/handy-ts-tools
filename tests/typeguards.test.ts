@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   isArray,
+  isDeepEqual,
   isDefined,
   isDiscriminatedUnionMember,
   isEmptyArray,
@@ -136,10 +137,9 @@ describe("typeguards", () => {
     expect(isNothing("")).toBe(false);
     expect(isSomething("value")).toBe(true);
     expect(isSomething(undefined)).toBe(false);
+    expect(isSomething(null)).toBe(false);
     expect(isNull(null)).toBe(true);
-    expect(isNull(undefined)).toBe(false);
     expect(isUndefined(undefined)).toBe(true);
-    expect(isUndefined(null)).toBe(false);
   });
 
   it("validates string patterns", () => {
@@ -149,8 +149,11 @@ describe("typeguards", () => {
     expect(isUUID("not-a-uuid")).toBe(false);
     expect(isISODate("2023-02-28")).toBe(true);
     expect(isISODate("2023-02-30")).toBe(false);
+    expect(isISODate("not-a-date")).toBe(false);
+    expect(isISODate(123)).toBe(false);
     expect(isISODateTime("2023-02-28T12:30:00Z")).toBe(true);
     expect(isISODateTime("2023-02-28T25:00:00Z")).toBe(false);
+    expect(isISODateTime("invalid")).toBe(false);
   });
 
   it("narrows objects containing keys", () => {
@@ -163,11 +166,26 @@ describe("typeguards", () => {
 
   it("performs shallow equality", () => {
     expect(isShallowEqual([1, 2], [1, 2])).toBe(true);
+    expect(isShallowEqual([1, 2], [1, 2, 3])).toBe(false); // different length
     expect(isShallowEqual([1, 2], [2, 1])).toBe(false);
     expect(isShallowEqual({ a: 1, b: 2 }, { b: 2, a: 1 })).toBe(true);
     expect(isShallowEqual({ a: 1 }, { a: 1, b: 2 })).toBe(false);
+    expect(isShallowEqual({ a: 1 }, { a: 2 })).toBe(false);
     expect(isShallowEqual("a", "a")).toBe(true);
     expect(isShallowEqual("a", "b")).toBe(false);
+  });
+
+  it("performs deep equality checks", () => {
+    expect(isDeepEqual({ a: { b: 1 } }, { a: { b: 1 } })).toBe(true);
+    expect(isDeepEqual({ a: [1, 2] }, { a: [1, 2] })).toBe(true);
+    expect(isDeepEqual({ a: 1 }, { a: 2 })).toBe(false);
+    expect(isDeepEqual([1], [1, 2])).toBe(false);
+    expect(isDeepEqual({ a: 1 }, { b: 1 })).toBe(false);
+    expect(isDeepEqual({ a: 1 }, null)).toBe(false);
+    expect(isDeepEqual([1], [1, 2])).toBe(false); // different length
+    expect(isDeepEqual([1, 2], [1, 3])).toBe(false); // different element
+    expect(isDeepEqual({ a: 1 }, { a: 2 })).toBe(false); // different value
+    expect(isDeepEqual([1], { "0": 1 })).toBe(false);
   });
 
   it("brands and guards values", () => {
@@ -182,6 +200,9 @@ describe("typeguards", () => {
     expect(isBrand(brandedStr)).toBe(true);
     expect(isBrand(rawStr)).toBe(false);
     expect(String(brandedStr)).toBe(rawStr); // boxed primitive still coerces correctly
+
+    expect(() => brand(null)).toThrow("createBrand: cannot brand null or undefined");
+    expect(() => brand(undefined)).toThrow("createBrand: cannot brand null or undefined");
   });
 
   it("narrows discriminated unions by tag", () => {
@@ -197,10 +218,10 @@ describe("typeguards", () => {
 
     expect(isDiscriminatedUnionMember(square, "kind", "circle")).toBe(false);
     expect(isDiscriminatedUnionMember(null as any, "kind", "circle")).toBe(false);
-    expect(isDiscriminatedUnionMember(() => {}, "kind" as any, "circle")).toBe(false);
+    expect(isDiscriminatedUnionMember(() => { }, "kind" as any, "circle")).toBe(false);
   });
 
   it("rejects functions as objects", () => {
-    expect(isObject(() => {})).toBe(false);
+    expect(isObject(() => { })).toBe(false);
   });
 });

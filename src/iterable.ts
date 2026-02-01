@@ -4,6 +4,9 @@
 
 /**
  * Converts an iterable into an array. Arrays are returned as shallow copies.
+ * 
+ * @example
+ * toArray(new Set([1, 2])) // [1, 2]
  */
 export function toArray<T>(iterable: Iterable<T>): T[] {
   return Array.isArray(iterable) ? iterable.slice() : Array.from(iterable);
@@ -11,6 +14,9 @@ export function toArray<T>(iterable: Iterable<T>): T[] {
 
 /**
  * Applies the mapper to each value as the iterable is consumed.
+ * 
+ * @example
+ * mapIterable([1, 2], (x) => x * 2) // IterableIterator<2, 4>
  */
 export function mapIterable<T, R>(iterable: Iterable<T>, mapper: (value: T, index: number) => R): IterableIterator<R> {
   return (function* () {
@@ -23,6 +29,9 @@ export function mapIterable<T, R>(iterable: Iterable<T>, mapper: (value: T, inde
 
 /**
  * Lazily filters iterable values by predicate.
+ * 
+ * @example
+ * filterIterable([1, 2, 3], (x) => x > 1) // IterableIterator<2, 3>
  */
 export function filterIterable<T>(
   iterable: Iterable<T>,
@@ -40,6 +49,9 @@ export function filterIterable<T>(
 
 /**
  * Takes the first `count` elements from an iterable.
+ * 
+ * @example
+ * take([1, 2, 3], 2) // IterableIterator<1, 2>
  */
 export function take<T>(iterable: Iterable<T>, count: number): IterableIterator<T> {
   if (count < 0) {
@@ -62,6 +74,9 @@ export function take<T>(iterable: Iterable<T>, count: number): IterableIterator<
 
 /**
  * Skips the first `count` elements and yields the rest.
+ * 
+ * @example
+ * drop([1, 2, 3], 1) // IterableIterator<2, 3>
  */
 export function drop<T>(iterable: Iterable<T>, count: number): IterableIterator<T> {
   if (count < 0) {
@@ -82,6 +97,9 @@ export function drop<T>(iterable: Iterable<T>, count: number): IterableIterator<
 
 /**
  * Flat maps iterable items using mapper that can return an iterable or a single value.
+ * 
+ * @example
+ * flatMapIterable([1, 2], (x) => [x, x]) // IterableIterator<1, 1, 2, 2>
  */
 export function flatMapIterable<T, R>(
   iterable: Iterable<T>,
@@ -102,6 +120,9 @@ export function flatMapIterable<T, R>(
 
 /**
  * Reduces iterable values into a single accumulator.
+ * 
+ * @example
+ * reduceIterable([1, 2, 3], (acc, x) => acc + x, 0) // 6
  */
 export function reduceIterable<T, R>(
   iterable: Iterable<T>,
@@ -118,6 +139,9 @@ export function reduceIterable<T, R>(
 
 /**
  * Builds a Set from iterable optionally applying mapper for each value.
+ * 
+ * @example
+ * toSet([1, 1, 2]) // Set { 1, 2 }
  */
 export function toSet<T, R = T>(iterable: Iterable<T>, mapper?: (value: T) => R): Set<R> {
   const result = new Set<R>();
@@ -129,6 +153,9 @@ export function toSet<T, R = T>(iterable: Iterable<T>, mapper?: (value: T) => R)
 
 /**
  * Creates a Map from iterable using selector functions for key/value.
+ * 
+ * @example
+ * toMap([1, 2], { key: (x) => x, value: (x) => x * 10 }) // Map { 1 => 10, 2 => 20 }
  */
 export function toMap<T, K, V>(
   iterable: Iterable<T>,
@@ -142,10 +169,10 @@ export function toMap<T, K, V>(
 }
 
 /**
- * Splits iterable into chunks of a given size.
- */
-/**
  * Splits an iterable into equally-sized chunks (last chunk may be shorter).
+ * 
+ * @example
+ * chunk([1, 2, 3, 4, 5], 2) // IterableIterator<[1, 2], [3, 4], [5]>
  */
 export function chunk<T>(iterable: Iterable<T>, size: number): IterableIterator<T[]> {
   if (size <= 0) {
@@ -167,10 +194,10 @@ export function chunk<T>(iterable: Iterable<T>, size: number): IterableIterator<
 }
 
 /**
- * Groups values by key selector.
- */
-/**
  * Aggregates iterable values into groups keyed by selector.
+ * 
+ * @example
+ * groupBy(['a', 'b', 'abc'], (x) => x.length) // Map { 1 => ['a', 'b'], 3 => ['abc'] }
  */
 export function groupBy<T, K>(iterable: Iterable<T>, selector: (item: T) => K): Map<K, T[]> {
   const groups = new Map<K, T[]>();
@@ -187,10 +214,10 @@ export function groupBy<T, K>(iterable: Iterable<T>, selector: (item: T) => K): 
 }
 
 /**
- * Partitions iterable into two arrays based on predicate.
- */
-/**
  * Partitions iterable into `[passing, failing]` buckets.
+ * 
+ * @example
+ * partition([1, 2, 3], (x) => x % 2 === 0) // [[2], [1, 3]]
  */
 export function partition<T>(iterable: Iterable<T>, predicate: (item: T, index: number) => boolean): [T[], T[]] {
   const truthy: T[] = [];
@@ -207,10 +234,10 @@ export function partition<T>(iterable: Iterable<T>, predicate: (item: T, index: 
 }
 
 /**
- * Combines multiple iterables by index.
- */
-/**
  * Zips multiple iterables together, stopping when the shortest ends.
+ * 
+ * @example
+ * zip([1, 2], ['a', 'b', 'c']) // IterableIterator<[1, 'a'], [2, 'b']>
  */
 export function zip<T extends unknown[]>(...iterables: { [K in keyof T]: Iterable<T[K]> }): IterableIterator<T> {
   return (function* () {
